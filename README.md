@@ -90,11 +90,11 @@ Stage 7  Summary                 ░░░░░░░░░░░░░░░�
 
 | # | Topic | Status | Core Concept |
 |---|-------|:------:|--------------|
-| 04 | [Self-Attention Mechanism](./04_self_attention/README.md) | 🔄 | W_Q · W_K · W_V · Q·Kᵀ · scale by √d_k · softmax · weights·V |
-| 05 | [Causal Attention](./05_causal_attention/README.md) | 🔄 | Causal mask · −∞ before softmax · renormalisation equivalence · dropout |
-| 06 | [Multi-Head Attention](./06_multihead_attention/README.md) | 🔄 | Split weights per head · per-head Q, K, V · concat · out_proj |
-| 07 | [Key-Value Cache](./07_kv_cache/README.md) | 🔄 | Prefill vs decode · cache K, V not Q · O(n²) → O(n) · cache size formula |
-| 08 | [Multi-Query Attention](./08_multi_query_attention/README.md) | 🔄 | One shared K and V for all heads · cache ÷ n_heads · quality trade-off |
+| 04 | [Self-Attention Mechanism](./04_self_attention/README.md) | 🔲 | W_Q · W_K · W_V · Q·Kᵀ · scale by √d_k · softmax · weights·V |
+| 05 | [Causal Attention](./05_causal_attention/README.md) | 🔲 | Causal mask · −∞ before softmax · renormalisation equivalence · dropout |
+| 06 | [Multi-Head Attention](./06_multihead_attention/README.md) | 🔲 | Split weights per head · per-head Q, K, V · concat · out_proj |
+| 07 | [Key-Value Cache](./07_kv_cache/README.md) | 🔲 | Prefill vs decode · cache K, V not Q · O(n²) → O(n) · cache size formula |
+| 08 | [Multi-Query Attention](./08_multi_query_attention/README.md) | 🔲 | One shared K and V for all heads · cache ÷ n_heads · quality trade-off |
 | 09 | [Grouped-Query Attention](./09_grouped_query_attention/README.md) | 🔲 | K, V shared per group of heads · the MHA ↔ MQA middle ground |
 
 ---
@@ -235,11 +235,11 @@ deepseek-from-scratch/
 ├── 01_deepseek_basics/                      🔲 Planned
 ├── 02_llm_architecture/                     🔲 Planned
 ├── 03_attention_intro/                      🔲 Planned
-├── 04_self_attention/                       🔄 Diagrams ready
-├── 05_causal_attention/                     🔄 Diagrams ready
-├── 06_multihead_attention/                  🔄 Diagrams ready
-├── 07_kv_cache/                             🔄 Diagrams ready
-├── 08_multi_query_attention/                🔄 Diagrams ready
+├── 04_self_attention/                       🔲 Planned
+├── 05_causal_attention/                     🔲 Planned
+├── 06_multihead_attention/                  🔲 Planned
+├── 07_kv_cache/                             🔲 Planned
+├── 08_multi_query_attention/                🔲 Planned
 ├── 09_grouped_query_attention/              🔲 Planned
 ├── 10_multihead_latent_attention/           🔲 Planned
 ├── 11_mla_code/                             🔲 Planned
