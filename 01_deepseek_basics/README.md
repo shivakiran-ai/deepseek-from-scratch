@@ -53,7 +53,7 @@ P_\theta(x_{t+1} = i \mid x_{1:t}) \;=\; \mathrm{softmax}(\mathbf{z}_t)_i \;=\; 
 Because each token is predicted from the ones before it, the probability of a whole sequence factorises **autoregressively**:
 
 ```math
-P_\theta(x_1, \dots, x_T) \;=\; \prod_{t=1}^{T} P_\theta(x_t \mid x_{<t})
+P_\theta(x_1, \dots, x_T) \;=\; \prod_{t=1}^{T} P_\theta(x_t \mid x_{\lt t})
 ```
 
 ---
@@ -83,7 +83,7 @@ The architecture behind all three properties — the "secret sauce" — is the *
 **Pretraining** minimises the average negative log-likelihood of the next token over a huge corpus — the text is its own label, so no human annotation is needed:
 
 ```math
-\mathcal{L}_{\text{pretrain}}(\theta) \;=\; -\frac{1}{T}\sum_{t=1}^{T} \log P_\theta(x_t \mid x_{<t})
+\mathcal{L}_{\text{pretrain}}(\theta) \;=\; -\frac{1}{T}\sum_{t=1}^{T} \log P_\theta(x_t \mid x_{\lt t})
 ```
 
 The result is a **foundation (base) model** with broad capabilities. DeepSeek-V3-Base was pretrained on 14.8 trillion tokens [4].
