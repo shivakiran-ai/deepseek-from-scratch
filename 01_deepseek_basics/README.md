@@ -159,7 +159,7 @@ For 1M input and 1M output tokens: GPT-4 costs $`30 + 60 = 90`$ USD, DeepSeek-R1
 The training cost figure covers only the final training run, not prior research or ablations [4]:
 
 ```math
-2{,}788\text{K GPU hours} \times \$2/\text{GPU hour} \;=\; \$5.576\text{M}
+2{,}788\text{K GPU hours} \times 2\ \text{USD per GPU hour} \;=\; 5.576\text{M USD}
 ```
 
 ---
@@ -187,7 +187,7 @@ Instead of relying mainly on human-labelled data, DeepSeek used **large-scale RL
 The RL algorithm is **GRPO** (Group Relative Policy Optimization), introduced in DeepSeekMath [2]. PPO needs a separate critic (value) model about as large as the policy; GRPO removes it. For each question it samples a group of $`G`$ answers, scores them, and uses the **group itself as the baseline**:
 
 ```math
-\hat{A}_i \;=\; \frac{r_i - \operatorname{mean}(r_1, \dots, r_G)}{\operatorname{std}(r_1, \dots, r_G)}
+\hat{A}_i \;=\; \frac{r_i - \mathrm{mean}(r_1, \dots, r_G)}{\mathrm{std}(r_1, \dots, r_G)}
 ```
 
 Answers better than their group average are reinforced; worse ones are penalised. For R1 the rewards are largely **rule-based** — is the final answer correct, and is the output in the required format — rather than a learned reward model [5].
