@@ -44,17 +44,17 @@ An LLM takes a sequence of tokens and returns a probability for **every** token 
 
 <p align="center"><img src="./images/fig1_next_token_engine.png" width="92%"/></p>
 
-Formally, given tokens $x_1, \dots, x_t$, the model produces a logit vector $\mathbf{z}_t \in \mathbb{R}^{|V|}$ and turns it into a distribution with softmax:
+Formally, given tokens $`x_1, \dots, x_t`$, the model produces a logit vector $`\mathbf{z}_t \in \mathbb{R}^{|V|}`$ and turns it into a distribution with softmax:
 
-$$
+```math
 P_\theta(x_{t+1} = i \mid x_{1:t}) \;=\; \mathrm{softmax}(\mathbf{z}_t)_i \;=\; \frac{e^{z_{t,i}}}{\sum_{j=1}^{|V|} e^{z_{t,j}}}
-$$
+```
 
 Because each token is predicted from the ones before it, the probability of a whole sequence factorises **autoregressively**:
 
-$$
+```math
 P_\theta(x_1, \dots, x_T) \;=\; \prod_{t=1}^{T} P_\theta(x_t \mid x_{<t})
-$$
+```
 
 ---
 
@@ -74,17 +74,17 @@ The architecture behind all three properties — the "secret sauce" — is the *
 
 ## 3. How an LLM Is Built — Pretraining + Finetuning
 
-$$
+```math
 \text{Creating an LLM} \;=\; \underbrace{\text{Pretraining}}_{\text{large, diverse, unlabelled data}} \;+\; \underbrace{\text{Finetuning}}_{\text{narrow, labelled, task-specific data}}
-$$
+```
 
 <p align="center"><img src="./images/fig2_pretrain_finetune.png" width="92%"/></p>
 
 **Pretraining** minimises the average negative log-likelihood of the next token over a huge corpus — the text is its own label, so no human annotation is needed:
 
-$$
+```math
 \mathcal{L}_{\text{pretrain}}(\theta) \;=\; -\frac{1}{T}\sum_{t=1}^{T} \log P_\theta(x_t \mid x_{<t})
-$$
+```
 
 The result is a **foundation (base) model** with broad capabilities. DeepSeek-V3-Base was pretrained on 14.8 trillion tokens [4].
 
@@ -112,11 +112,11 @@ DeepSeek-R1 is a **reasoning model** reported to perform comparably to OpenAI-o1
 
 DeepSeek-V2 and V3 are **Mixture-of-Experts** models: for each token a router activates only a few expert sub-networks.
 
-$$
+```math
 \text{active fraction (V3)} \;=\; \frac{37\,\text{B}}{671\,\text{B}} \;\approx\; 5.5\%
 \qquad\qquad
 \text{active fraction (V2)} \;=\; \frac{21\,\text{B}}{236\,\text{B}} \;\approx\; 8.9\%
-$$
+```
 
 <p align="center"><img src="./images/fig4_total_vs_active_params.png" width="85%"/></p>
 
@@ -137,11 +137,11 @@ Compute per token scales with the **active** parameters; memory still has to hol
 
 The cost of a request is linear in the token counts:
 
-$$
+```math
 \text{Cost} \;=\; \frac{N_{\text{in}}}{10^6}\,p_{\text{in}} \;+\; \frac{N_{\text{out}}}{10^6}\,p_{\text{out}}
-$$
+```
 
-For 1M input and 1M output tokens: GPT-4 costs $30 + 60 = 90$ USD, DeepSeek-R1 costs $0.55 + 2.19 = 2.74$ USD — about **33× cheaper**.
+For 1M input and 1M output tokens: GPT-4 costs $`30 + 60 = 90`$ USD, DeepSeek-R1 costs $`0.55 + 2.19 = 2.74`$ USD — about **33× cheaper**.
 
 > **Fair comparison note.** Prices are list prices at R1's launch (January 2025) and change over time. GPT-4 is a 2023 model; the closer peer to R1 is OpenAI-o1, listed at \$15 / \$60 per 1M tokens — still roughly 27× more expensive than R1.
 
@@ -158,9 +158,9 @@ For 1M input and 1M output tokens: GPT-4 costs $30 + 60 = 90$ USD, DeepSeek-R1 c
 
 The training cost figure covers only the final training run, not prior research or ablations [4]:
 
-$$
+```math
 2{,}788\text{K GPU hours} \times \$2/\text{GPU hour} \;=\; \$5.576\text{M}
-$$
+```
 
 ---
 
@@ -184,11 +184,11 @@ $$
 
 Instead of relying mainly on human-labelled data, DeepSeek used **large-scale RL** to teach reasoning. **DeepSeek-R1-Zero** was trained with RL directly on the base model, with **no** supervised finetuning step, and still developed long chain-of-thought, self-verification and reflection [5].
 
-The RL algorithm is **GRPO** (Group Relative Policy Optimization), introduced in DeepSeekMath [2]. PPO needs a separate critic (value) model about as large as the policy; GRPO removes it. For each question it samples a group of $G$ answers, scores them, and uses the **group itself as the baseline**:
+The RL algorithm is **GRPO** (Group Relative Policy Optimization), introduced in DeepSeekMath [2]. PPO needs a separate critic (value) model about as large as the policy; GRPO removes it. For each question it samples a group of $`G`$ answers, scores them, and uses the **group itself as the baseline**:
 
-$$
+```math
 \hat{A}_i \;=\; \frac{r_i - \operatorname{mean}(r_1, \dots, r_G)}{\operatorname{std}(r_1, \dots, r_G)}
-$$
+```
 
 Answers better than their group average are reinforced; worse ones are penalised. For R1 the rewards are largely **rule-based** — is the final answer correct, and is the output in the required format — rather than a learned reward model [5].
 
@@ -208,7 +208,7 @@ DeepSeek open-sourced R1, R1-Zero and **six dense models distilled from R1** —
 
 ## Key Technical Observations
 
-1. **An LLM is a conditional probability distribution over the next token.** Every topic in this series changes *how* $P_\theta(x_{t+1} \mid x_{1:t})$ is computed, never *what* it is.
+1. **An LLM is a conditional probability distribution over the next token.** Every topic in this series changes *how* $`P_\theta(x_{t+1} \mid x_{1:t})`$ is computed, never *what* it is.
 2. **DeepSeek's architecture innovations are almost all about efficiency.** MLA cuts inference memory, MoE cuts compute per token, FP8 cuts training cost, MTP extracts more signal per token.
 3. **Total parameters ≠ compute.** V3 has the capacity of a 671B model but the per-token compute of a ~37B one. Memory, not compute, becomes the deployment bottleneck.
 4. **R1 is a training breakthrough, not an architecture one.** It reuses V3-Base and changes the finetuning stage: RL with rule-based rewards via GRPO.
