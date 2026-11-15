@@ -12,8 +12,8 @@
 
 <br/>
 
-[![Topics Complete](https://img.shields.io/badge/Topics%20Complete-2%20%2F%2026-1A56A0?style=for-the-badge)](.)
-[![Stage 1](https://img.shields.io/badge/Stage%201%20%7C%20Foundations-2%2F3-2E75B6?style=for-the-badge)](.)
+[![Topics Complete](https://img.shields.io/badge/Topics%20Complete-3%20%2F%2026-1A56A0?style=for-the-badge)](.)
+[![Stage 1](https://img.shields.io/badge/Stage%201%20%7C%20Foundations-3%2F3-22C55E?style=for-the-badge)](.)
 [![Stage 2](https://img.shields.io/badge/Stage%202%20%7C%20Attention%20%26%20KV%20Cache-0%2F6-6B7280?style=for-the-badge)](.)
 [![Stage 3](https://img.shields.io/badge/Stage%203%20%7C%20MLA%20%26%20RoPE-0%2F6-6B7280?style=for-the-badge)](.)
 [![Stage 4](https://img.shields.io/badge/Stage%204%20%7C%20Mixture%20of%20Experts-0%2F4-6B7280?style=for-the-badge)](.)
@@ -55,10 +55,10 @@ Read the `README.md` first. Run the notebook to see it in action. Open the `.doc
 ## Progress
 
 ```
-Overall  ███░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2 / 26 topics complete
+Overall  █████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   3 / 26 topics complete
 
-Stage 1  Foundations             █████████████░░░░░░░  2 / 3  ← active
-Stage 2  Attention & KV Cache    ░░░░░░░░░░░░░░░░░░░░  0 / 6
+Stage 1  Foundations             ████████████████████  3 / 3  ✅ COMPLETE
+Stage 2  Attention & KV Cache    ░░░░░░░░░░░░░░░░░░░░  0 / 6  ← next
 Stage 3  MLA & RoPE              ░░░░░░░░░░░░░░░░░░░░  0 / 6
 Stage 4  Mixture of Experts      ░░░░░░░░░░░░░░░░░░░░  0 / 4
 Stage 5  Multi-Token Prediction  ░░░░░░░░░░░░░░░░░░░░  0 / 3
@@ -72,7 +72,7 @@ Stage 7  Summary                 ░░░░░░░░░░░░░░░�
 
 ## The Series Roadmap
 
-### 🧱 Stage 1 — Foundations
+### 🧱 Stage 1 — Foundations ✅
 
 > *Where DeepSeek fits and the GPT-style architecture it starts from*
 
@@ -80,7 +80,7 @@ Stage 7  Summary                 ░░░░░░░░░░░░░░░�
 |---|-------|:------:|--------------|
 | 01 | [DeepSeek Basics](./01_deepseek_basics/README.md) | ✅ | What DeepSeek is · V2/V3/R1 · The four innovations this series builds |
 | 02 | [LLM Architecture Overview](./02_llm_architecture/README.md) | ✅ | Tokens → embeddings → transformer blocks → logits · GPT-style decoder |
-| 03 | [Introduction to Attention](./03_attention_intro/README.md) | 🔲 | Why attention · context vectors · from RNNs to Transformers |
+| 03 | [Introduction to Attention](./03_attention_intro/README.md) | ✅ | Why attention · context vectors · from RNNs to Transformers |
 
 ---
 
@@ -234,7 +234,7 @@ deepseek-from-scratch/
 │
 ├── 01_deepseek_basics/                      ✅ Complete
 ├── 02_llm_architecture/                     ✅ Complete
-├── 03_attention_intro/                      🔲 Planned
+├── 03_attention_intro/                      ✅ Complete
 ├── 04_self_attention/                       🔲 Planned
 ├── 05_causal_attention/                     🔲 Planned
 ├── 06_multihead_attention/                  🔲 Planned
