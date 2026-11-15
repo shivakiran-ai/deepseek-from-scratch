@@ -12,9 +12,9 @@
 
 <br/>
 
-[![Topics Complete](https://img.shields.io/badge/Topics%20Complete-3%20%2F%2026-1A56A0?style=for-the-badge)](.)
+[![Topics Complete](https://img.shields.io/badge/Topics%20Complete-4%20%2F%2026-1A56A0?style=for-the-badge)](.)
 [![Stage 1](https://img.shields.io/badge/Stage%201%20%7C%20Foundations-3%2F3-22C55E?style=for-the-badge)](.)
-[![Stage 2](https://img.shields.io/badge/Stage%202%20%7C%20Attention%20%26%20KV%20Cache-0%2F6-6B7280?style=for-the-badge)](.)
+[![Stage 2](https://img.shields.io/badge/Stage%202%20%7C%20Attention%20%26%20KV%20Cache-1%2F6-2E75B6?style=for-the-badge)](.)
 [![Stage 3](https://img.shields.io/badge/Stage%203%20%7C%20MLA%20%26%20RoPE-0%2F6-6B7280?style=for-the-badge)](.)
 [![Stage 4](https://img.shields.io/badge/Stage%204%20%7C%20Mixture%20of%20Experts-0%2F4-6B7280?style=for-the-badge)](.)
 [![Stage 5](https://img.shields.io/badge/Stage%205%20%7C%20Multi--Token%20Prediction-0%2F3-6B7280?style=for-the-badge)](.)
@@ -55,10 +55,10 @@ Read the `README.md` first. Run the notebook to see it in action. Open the `.doc
 ## Progress
 
 ```
-Overall  █████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   3 / 26 topics complete
+Overall  ██████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   4 / 26 topics complete
 
 Stage 1  Foundations             ████████████████████  3 / 3  ✅ COMPLETE
-Stage 2  Attention & KV Cache    ░░░░░░░░░░░░░░░░░░░░  0 / 6  ← next
+Stage 2  Attention & KV Cache    ███░░░░░░░░░░░░░░░░░  1 / 6  ← active
 Stage 3  MLA & RoPE              ░░░░░░░░░░░░░░░░░░░░  0 / 6
 Stage 4  Mixture of Experts      ░░░░░░░░░░░░░░░░░░░░  0 / 4
 Stage 5  Multi-Token Prediction  ░░░░░░░░░░░░░░░░░░░░  0 / 3
@@ -90,7 +90,7 @@ Stage 7  Summary                 ░░░░░░░░░░░░░░░�
 
 | # | Topic | Status | Core Concept |
 |---|-------|:------:|--------------|
-| 04 | [Self-Attention Mechanism](./04_self_attention/README.md) | 🔲 | W_Q · W_K · W_V · Q·Kᵀ · scale by √d_k · softmax · weights·V |
+| 04 | [Self-Attention Mechanism](./04_self_attention/README.md) | ✅ | W_Q · W_K · W_V · Q·Kᵀ · scale by √d_k · softmax · weights·V |
 | 05 | [Causal Attention](./05_causal_attention/README.md) | 🔲 | Causal mask · −∞ before softmax · renormalisation equivalence · dropout |
 | 06 | [Multi-Head Attention](./06_multihead_attention/README.md) | 🔲 | Split weights per head · per-head Q, K, V · concat · out_proj |
 | 07 | [Key-Value Cache](./07_kv_cache/README.md) | 🔲 | Prefill vs decode · cache K, V not Q · O(n²) → O(n) · cache size formula |
@@ -235,7 +235,7 @@ deepseek-from-scratch/
 ├── 01_deepseek_basics/                      ✅ Complete
 ├── 02_llm_architecture/                     ✅ Complete
 ├── 03_attention_intro/                      ✅ Complete
-├── 04_self_attention/                       🔲 Planned
+├── 04_self_attention/                       ✅ Complete
 ├── 05_causal_attention/                     🔲 Planned
 ├── 06_multihead_attention/                  🔲 Planned
 ├── 07_kv_cache/                             🔲 Planned
