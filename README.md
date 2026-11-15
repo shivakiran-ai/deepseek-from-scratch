@@ -12,8 +12,8 @@
 
 <br/>
 
-[![Topics Complete](https://img.shields.io/badge/Topics%20Complete-1%20%2F%2026-1A56A0?style=for-the-badge)](.)
-[![Stage 1](https://img.shields.io/badge/Stage%201%20%7C%20Foundations-1%2F3-2E75B6?style=for-the-badge)](.)
+[![Topics Complete](https://img.shields.io/badge/Topics%20Complete-2%20%2F%2026-1A56A0?style=for-the-badge)](.)
+[![Stage 1](https://img.shields.io/badge/Stage%201%20%7C%20Foundations-2%2F3-2E75B6?style=for-the-badge)](.)
 [![Stage 2](https://img.shields.io/badge/Stage%202%20%7C%20Attention%20%26%20KV%20Cache-0%2F6-6B7280?style=for-the-badge)](.)
 [![Stage 3](https://img.shields.io/badge/Stage%203%20%7C%20MLA%20%26%20RoPE-0%2F6-6B7280?style=for-the-badge)](.)
 [![Stage 4](https://img.shields.io/badge/Stage%204%20%7C%20Mixture%20of%20Experts-0%2F4-6B7280?style=for-the-badge)](.)
@@ -55,9 +55,9 @@ Read the `README.md` first. Run the notebook to see it in action. Open the `.doc
 ## Progress
 
 ```
-Overall  ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   1 / 26 topics complete
+Overall  ███░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   2 / 26 topics complete
 
-Stage 1  Foundations             ███████░░░░░░░░░░░░░  1 / 3  ← active
+Stage 1  Foundations             █████████████░░░░░░░  2 / 3  ← active
 Stage 2  Attention & KV Cache    ░░░░░░░░░░░░░░░░░░░░  0 / 6
 Stage 3  MLA & RoPE              ░░░░░░░░░░░░░░░░░░░░  0 / 6
 Stage 4  Mixture of Experts      ░░░░░░░░░░░░░░░░░░░░  0 / 4
@@ -79,7 +79,7 @@ Stage 7  Summary                 ░░░░░░░░░░░░░░░�
 | # | Topic | Status | Core Concept |
 |---|-------|:------:|--------------|
 | 01 | [DeepSeek Basics](./01_deepseek_basics/README.md) | ✅ | What DeepSeek is · V2/V3/R1 · The four innovations this series builds |
-| 02 | [LLM Architecture Overview](./02_llm_architecture/README.md) | 🔲 | Tokens → embeddings → transformer blocks → logits · GPT-style decoder |
+| 02 | [LLM Architecture Overview](./02_llm_architecture/README.md) | ✅ | Tokens → embeddings → transformer blocks → logits · GPT-style decoder |
 | 03 | [Introduction to Attention](./03_attention_intro/README.md) | 🔲 | Why attention · context vectors · from RNNs to Transformers |
 
 ---
@@ -233,7 +233,7 @@ deepseek-from-scratch/
 ├── .gitignore
 │
 ├── 01_deepseek_basics/                      ✅ Complete
-├── 02_llm_architecture/                     🔲 Planned
+├── 02_llm_architecture/                     ✅ Complete
 ├── 03_attention_intro/                      🔲 Planned
 ├── 04_self_attention/                       🔲 Planned
 ├── 05_causal_attention/                     🔲 Planned
