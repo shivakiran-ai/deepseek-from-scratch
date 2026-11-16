@@ -12,10 +12,10 @@
 
 <br/>
 
-[![Topics Complete](https://img.shields.io/badge/Topics%20Complete-9%20%2F%2026-1A56A0?style=for-the-badge)](.)
+[![Topics Complete](https://img.shields.io/badge/Topics%20Complete-10%20%2F%2026-1A56A0?style=for-the-badge)](.)
 [![Stage 1](https://img.shields.io/badge/Stage%201%20%7C%20Foundations-3%2F3-22C55E?style=for-the-badge)](.)
 [![Stage 2](https://img.shields.io/badge/Stage%202%20%7C%20Attention%20%26%20KV%20Cache-6%2F6-22C55E?style=for-the-badge)](.)
-[![Stage 3](https://img.shields.io/badge/Stage%203%20%7C%20MLA%20%26%20RoPE-0%2F6-6B7280?style=for-the-badge)](.)
+[![Stage 3](https://img.shields.io/badge/Stage%203%20%7C%20MLA%20%26%20RoPE-1%2F6-2E75B6?style=for-the-badge)](.)
 [![Stage 4](https://img.shields.io/badge/Stage%204%20%7C%20Mixture%20of%20Experts-0%2F4-6B7280?style=for-the-badge)](.)
 [![Stage 5](https://img.shields.io/badge/Stage%205%20%7C%20Multi--Token%20Prediction-0%2F3-6B7280?style=for-the-badge)](.)
 [![Stage 6](https://img.shields.io/badge/Stage%206%20%7C%20Quantization-0%2F3-6B7280?style=for-the-badge)](.)
@@ -55,11 +55,11 @@ Read the `README.md` first. Run the notebook to see it in action. Open the `.doc
 ## Progress
 
 ```
-Overall  ███████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░   9 / 26 topics complete
+Overall  ████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░  10 / 26 topics complete
 
 Stage 1  Foundations             ████████████████████  3 / 3  ✅ COMPLETE
 Stage 2  Attention & KV Cache    ████████████████████  6 / 6  ✅ COMPLETE
-Stage 3  MLA & RoPE              ░░░░░░░░░░░░░░░░░░░░  0 / 6  ← next
+Stage 3  MLA & RoPE              ███░░░░░░░░░░░░░░░░░  1 / 6  ← active
 Stage 4  Mixture of Experts      ░░░░░░░░░░░░░░░░░░░░  0 / 4
 Stage 5  Multi-Token Prediction  ░░░░░░░░░░░░░░░░░░░░  0 / 3
 Stage 6  Quantization            ░░░░░░░░░░░░░░░░░░░░  0 / 3
@@ -105,7 +105,7 @@ Stage 7  Summary                 ░░░░░░░░░░░░░░░�
 
 | # | Topic | Status | Core Concept |
 |---|-------|:------:|--------------|
-| 10 | [Multi-Head Latent Attention (MLA)](./10_multihead_latent_attention/README.md) | 🔲 | Low-rank latent KV · cache the latent, not K and V · weight absorption |
+| 10 | [Multi-Head Latent Attention (MLA)](./10_multihead_latent_attention/README.md) | ✅ | Low-rank latent KV · cache the latent, not K and V · weight absorption |
 | 11 | [Multi-Head Latent Attention — Coded](./11_mla_code/README.md) | 🔲 | MLA from scratch in PyTorch · cache size vs MHA/MQA/GQA |
 | 12 | [Integer & Binary Positional Encodings](./12_integer_binary_positional_encoding/README.md) | 🔲 | Why position matters · integer and binary encodings and their limits |
 | 13 | [Sinusoidal Positional Encodings](./13_sinusoidal_positional_encoding/README.md) | 🔲 | sin/cos at many frequencies · relative positions as rotations |
@@ -241,7 +241,7 @@ deepseek-from-scratch/
 ├── 07_kv_cache/                             ✅ Complete
 ├── 08_multi_query_attention/                ✅ Complete
 ├── 09_grouped_query_attention/              ✅ Complete
-├── 10_multihead_latent_attention/           🔲 Planned
+├── 10_multihead_latent_attention/           ✅ Complete
 ├── 11_mla_code/                             🔲 Planned
 ├── 12_integer_binary_positional_encoding/   🔲 Planned
 ├── 13_sinusoidal_positional_encoding/       🔲 Planned
