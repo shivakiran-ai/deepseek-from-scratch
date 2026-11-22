@@ -147,9 +147,9 @@ A \, V \, W_O
 So $`W_{UV}`$ is absorbed into the output projection, and the values $`V`$ are never formed either. With several heads, each head $`i`$ has its own absorbed matrices $`W_Q^{(i)} W_{UK}^{(i)\top}`$ and $`W_{UV}^{(i)} W_O^{(i)}`$, while all heads read the **same** cached $`C_{KV}`$:
 
 ```math
-\mathrm{MLA}(X) \;=\; \sum_{i=1}^{n_h} A_i \, C_{KV} \left(W_{UV}^{(i)} W_O^{(i)}\right),
+\mathrm{MLA}(X) \;=\; \sum_{i=1}^{n_h} A_i \, C_{KV} \, \bigl( {W_{UV}}^{(i)} \, {W_O}^{(i)} \bigr),
 \qquad
-A_i = \mathrm{softmax}\left(\frac{X \left(W_Q^{(i)} W_{UK}^{(i)\top}\right) C_{KV}^{\top}}{\sqrt{d_h}} + M\right)
+A_i = \mathrm{softmax}\left(\frac{X \, \bigl( {W_Q}^{(i)} \, {W_{UK}}^{(i)\top} \bigr) \, C_{KV}^{\top}}{\sqrt{d_h}} + M\right)
 ```
 
 | Quantity | Status at inference |
@@ -174,7 +174,7 @@ The latent cache already holds $`C_{KV} = X W_{DKV}`$ of shape $`(4, 4)`$ for `"
 1. **Absorbed query.** For head $`i`$, the new token's query is projected straight into the latent space:
 
 ```math
-\tilde{q}_{\text{bright}}^{(i)} \;=\; x_{\text{bright}} \left(W_Q^{(i)} W_{UK}^{(i)\top}\right),
+\tilde{q}_{\text{bright}}^{(i)} \;=\; x_{\text{bright}} \, \bigl( {W_Q}^{(i)} \, {W_{UK}}^{(i)\top} \bigr),
 \qquad (1, 8) \cdot (8, 2) \cdot (2, 4) \;\to\; (1, 4)
 ```
 
