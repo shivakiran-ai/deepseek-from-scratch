@@ -17,7 +17,7 @@
 
 ## Abstract
 
-This topic codes **multi-head latent attention (MLA)** from scratch for one decoding step. Five tokens — *"The next day is bright"* — are already stored in the latent KV cache. A new token arrives, and in ten steps we compute its context vector: absorbed query matrices, compression of the new token, appending it to the cache, attention scores and weights for each head, the value matrix, and the context vector. Every value is printed by the accompanying notebook. Part 2 gives the PyTorch implementation, with memory and cache-growth tests.
+This topic codes **multi-head latent attention (MLA)** from scratch for one decoding step. Five tokens — *"The next day is bright"* — are already stored in the latent KV cache. A new token arrives, and in ten steps we compute its context vector: absorbed query matrices, compression of the new token, appending it to the cache, attention scores and weights for each head, the value matrix, and the context vector. Every step shows the shapes and the actual values. Part 2 gives the PyTorch implementation, with memory and cache-growth tests.
 
 ---
 
@@ -67,7 +67,7 @@ W_q (8x8):                                    W_uk (4x8):
                                                 [0.3, 0.1, 0.2, 0.1, 0.3, 0.1, 0.2, 0.1],
 W_dkv (8x4):                                    [0.1, 0.3, 0.1, 0.2, 0.1, 0.3, 0.1, 0.2] ]
 [ [ 0.1,  0.2,  0.3,  0.1],
-  [-0.2,  0.1,  0.3,  0.2],                   W_o (8x8): see the notebook
+  [-0.2,  0.1,  0.3,  0.2],                   W_o (8x8): output projection
   [ 0.3, -0.1,  0.2,  0.1],
   [ 0.2,  0.3, -0.1,  0.2],
   [ 0.1,  0.2,  0.1,  0.3],
@@ -515,14 +515,11 @@ plt.show()
 
 ---
 
-## Notes on the Values
+## Notes
 
-All numbers in Part 1 are printed by the notebook from the listed weights. Compared with the original notes:
-
-- **Step ④:** $`W_q \cdot W_{uk}^{\top}`$ from the listed weights starts 0.20, 0.28, … (the notes show 0.38, 0.34, …).
-- **Step ⑤:** LayerNorm of [0.22, −0.02, −0.16, −0.22] is [1.5647, 0.1476, −0.6790, −1.0333]. DeepSeek-V2/V3 use RMSNorm on the latent vector [1]; LayerNorm is kept here to match the code.
-- **Step ⑦:** scores are divided by $`\sqrt{d_{head}} = 2`$, as in the code.
-- **Head split:** this walkthrough and the code split the input `x` between heads. In the standard multi-head formulation each head's query is $`x \cdot W_q[:, \text{head columns}]`$, which uses all of `x`; that version gives different numbers (for head 1, scores [−0.0396, −0.0712, 0.0570, −0.0698, −0.0046, −0.0057]).
+- **Normalisation (Step ⑤):** the compressed latent vector is normalised with LayerNorm, as in the PyTorch code. DeepSeek-V2 and V3 use RMSNorm at this point [1].
+- **Scaling (Step ⑦):** the attention scores are divided by $`\sqrt{d_{head}} = 2`$ before the softmax, so they do not grow with the head size.
+- **Head split (Step ⑦):** this walkthrough and the code split the input `x` between the heads. In the standard multi-head formulation each head's query is $`x \cdot W_q[:, \text{head columns}]`$, which uses all of `x`; that version gives different numbers (for head 1, scores [−0.0396, −0.0712, 0.0570, −0.0698, −0.0046, −0.0057]).
 
 ---
 
