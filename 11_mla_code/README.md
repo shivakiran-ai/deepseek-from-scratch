@@ -28,7 +28,7 @@ This topic codes **multi-head latent attention (MLA)** from scratch for one deco
 | **Topic** | 11 of 26 — Stage 3 |
 | **Builds on** | Topic 10 — Multi-Head Latent Attention |
 | **Example** | `d_model = 8`, `kv_latent_dim = 4`, `n_heads = 2`, `d_head = 4`; 5 cached tokens + 1 new token |
-| **Code** | [`Topic11_MLA_from_scratch.ipynb`](./Topic11_MLA_from_scratch.ipynb) — NumPy, runs top to bottom |
+| **Code** | [`Topic11_MLA_from_scratch.ipynb`](./Topic11_MLA_from_scratch.ipynb) — Part 1 in NumPy, Part 2 in PyTorch |
 | **Version** | 1.0 · November 2026 |
 
 <p align="center"><img src="./images/fig1_decode_step_map.png" width="100%"/></p>
@@ -111,34 +111,33 @@ previous_cache = [
 ### ④ Absorbed Query Matrix
 
 - Instead of building keys `K = c_kv · W_uk`, multiply `W_q` and `W_uk` once, ahead of time.
-- The result maps a query straight into the latent space, so it can be compared with the cache rows directly.
-- It is computed once after training: shape (8, 4), grouped into one (4, 4) block per head.
+- Each head first takes its own columns of `W_q` and `W_uk` (columns 0–3 for head 1, 4–7 for head 2), so it keeps all 8 input rows.
+- The result maps the whole token straight into the latent space: one (8, 4) matrix per head, computed once after training.
 
 ```math
-W_q \cdot W_{uk}^{\top} \;\rightarrow\; (8, 4), \qquad (8 \times 8)\,(8 \times 4)
+\text{head } h: \quad W_q[:, h] \cdot W_{uk}[:, h]^{\top} \;\rightarrow\; (8, 4), \qquad (8 \times 4)\,(4 \times 4)
 ```
 
 ```
-W_q @ W_uk.T = absorbed_qk (8x4):
-[ [0.20, 0.28, 0.36, 0.20],      ┐
-  [0.30, 0.26, 0.28, 0.30],      │  head 1
-  [0.20, 0.28, 0.36, 0.20],      │
-  [0.28, 0.30, 0.26, 0.28],      ┘
-  [0.20, 0.28, 0.36, 0.20],      ┐
-  [0.30, 0.26, 0.28, 0.30],      │  head 2
-  [0.20, 0.28, 0.36, 0.20],      │
-  [0.28, 0.30, 0.26, 0.28] ]     ┘
+head 1:  W_q[:, 0:4] (8x4)  @  W_uk[:, 0:4].T (4x4)  =  absorbed_qk[0] (8x4)
+head 2:  W_q[:, 4:8] (8x4)  @  W_uk[:, 4:8].T (4x4)  =  absorbed_qk[1] (8x4)
 ```
 
-Group by heads: (n_heads, head_dim, latent_dim) = **(2, 4, 4)**.
+Stacked by heads: (n_heads, d_model, latent_dim) = **(2, 8, 4)**.
 
 ```
-absorbed_qk[0] (4x4):  head 1          absorbed_qk[1] (4x4):  head 2
-[ [0.20, 0.28, 0.36, 0.20],            [ [0.20, 0.28, 0.36, 0.20],
-  [0.30, 0.26, 0.28, 0.30],              [0.30, 0.26, 0.28, 0.30],
-  [0.20, 0.28, 0.36, 0.20],              [0.20, 0.28, 0.36, 0.20],
-  [0.28, 0.30, 0.26, 0.28] ]  4x4        [0.28, 0.30, 0.26, 0.28] ]  4x4
+absorbed_qk[0] (8x4):  head 1          absorbed_qk[1] (8x4):  head 2
+[ [0.10, 0.14, 0.18, 0.10],            [ [0.10, 0.14, 0.18, 0.10],
+  [0.15, 0.13, 0.14, 0.15],              [0.15, 0.13, 0.14, 0.15],
+  [0.10, 0.14, 0.18, 0.10],              [0.10, 0.14, 0.18, 0.10],
+  [0.14, 0.15, 0.13, 0.14],              [0.14, 0.15, 0.13, 0.14],
+  [0.10, 0.14, 0.18, 0.10],              [0.10, 0.14, 0.18, 0.10],
+  [0.15, 0.13, 0.14, 0.15],              [0.15, 0.13, 0.14, 0.15],
+  [0.10, 0.14, 0.18, 0.10],              [0.10, 0.14, 0.18, 0.10],
+  [0.14, 0.15, 0.13, 0.14] ]  8x4        [0.14, 0.15, 0.13, 0.14] ]  8x4
 ```
+
+The two heads are identical here because, in these example weights, the head-2 columns repeat the head-1 columns.
 
 ---
 
@@ -182,27 +181,20 @@ previous_cache (old cache)           c_kv (new cache)
 
 ### ⑦ Compute Query Representation for the New Token + Attention
 
-- Each head takes its half of `x` and its own absorbed block, giving a (1, 4) query that already lives in the latent space.
+- Both heads use the whole new token `x` (1, 8); each multiplies it by its own absorbed matrix, giving a (1, 4) query that already lives in the latent space.
 - Multiplying by `c_kvᵀ` compares the new token with all six tokens at once — one score per token.
 - Dividing by √d_head = 2 keeps the scores from growing with the head size; softmax turns them into weights that sum to 1.
 - The new token is the last position, so it may look at all six tokens and no mask is needed here.
 
-**Reshape the new token input into 2 heads:**
-
-```
-x' = [ [0.1, -0.2, 0.3, -0.4],     →  head 1   (1x4)
-       [0.5, -0.6, 0.7, -0.8] ]    →  head 2   (1x4)
-```
-
 **Absorbed query vectors:**
 
 ```math
-\text{tmp}_h \;=\; x_h \cdot \text{absorbed\_qk}[h], \qquad (1 \times 4)\,(4 \times 4) = (1 \times 4)
+\text{tmp}_h \;=\; x \cdot \text{absorbed\_qk}[h], \qquad (1 \times 8)\,(8 \times 4) = (1 \times 4)
 ```
 
 ```
-tmp_head1 = [0.1, -0.2, 0.3, -0.4] · absorbed_qk[0]  =  [-0.092, -0.060, -0.016, -0.092]     1x4
-tmp_head2 = [0.5, -0.6, 0.7, -0.8] · absorbed_qk[1]  =  [-0.164, -0.060,  0.056, -0.164]     1x4
+tmp_head1 = x · absorbed_qk[0]  =  [-0.128, -0.060, 0.020, -0.128]     1x4
+tmp_head2 = x · absorbed_qk[1]  =  [-0.128, -0.060, 0.020, -0.128]     1x4
 ```
 
 **Attention scores** — each absorbed query times the new cache transposed, divided by $`\sqrt{d_{head}} = 2`$:
@@ -218,15 +210,15 @@ c_kv_transposed = [
   [-0.5,  0.6,  0.8, -0.4,  0.3, -0.6790],
   [-0.8,  0.4, -0.3,  0.1,  0.9, -1.0333] ]      4x6
 
-attn_scores_head1 = [-0.0234, -0.0586, 0.0246, -0.0500, -0.0028, -0.0234]     1x6
-attn_scores_head2 = [-0.0558, -0.0838, 0.0894, -0.0896, -0.0064, -0.0670]     1x6
+attn_scores_head1 = [-0.0396, -0.0712, 0.0570, -0.0698, -0.0046, -0.0452]     1x6
+attn_scores_head2 = [-0.0396, -0.0712, 0.0570, -0.0698, -0.0046, -0.0452]     1x6
 ```
 
 **Attention weights** — softmax of the scores:
 
 ```
-attn_weights_head1 = [0.1664, 0.1607, 0.1746, 0.1620, 0.1699, 0.1664]     1x6
-attn_weights_head2 = [0.1630, 0.1585, 0.1885, 0.1576, 0.1713, 0.1612]     1x6
+attn_weights_head1 = [0.1647, 0.1596, 0.1814, 0.1598, 0.1706, 0.1638]     1x6
+attn_weights_head2 = [0.1647, 0.1596, 0.1814, 0.1598, 0.1706, 0.1638]     1x6
 ```
 
 ---
@@ -264,10 +256,10 @@ V = [                head 1                 |                head 2
 ```
 
 ```
-context_head1 = [0.1085, 0.0431, 0.1553, 0.0696]     1x4
-context_head2 = [0.1087, 0.0436, 0.1511, 0.0699]     1x4
+context_head1 = [0.1086, 0.0433, 0.1533, 0.0697]     1x4
+context_head2 = [0.1086, 0.0433, 0.1533, 0.0697]     1x4
 
-combined_context = [0.1085, 0.0431, 0.1553, 0.0696, 0.1087, 0.0436, 0.1511, 0.0699]     1x8
+combined_context = [0.1086, 0.0433, 0.1533, 0.0697, 0.1086, 0.0433, 0.1533, 0.0697]     1x8
 ```
 
 ---
@@ -288,8 +280,8 @@ combined_context = [0.1085, 0.0431, 0.1553, 0.0696, 0.1087, 0.0436, 0.1511, 0.06
 ### Step 1: Writing the code for the Multi-Head Latent Attention
 
 - `__init__` creates the five weight matrices of Part 1 as `nn.Linear` layers without bias, plus the LayerNorm for the latent vector.
-- `forward` runs Part 1 for a whole batch: compress and append (⑤ ⑥), values (⑧), split `x` and score each head (⑦), causal mask and softmax, context (⑨), output (⑩).
-- `absorbed_k` is computed on the first call and reused afterwards.
+- `forward` runs Part 1 for a whole batch: compress and append (⑤ ⑥), values (⑧), score each head with the full `x` (⑦), causal mask and softmax, context (⑨), output (⑩).
+- `absorbed_k` holds one (D, latent_dim) matrix per head; it is computed once in evaluation mode and recomputed every step during training, when `W_q` and `W_uk` change.
 - It returns the output and the updated cache, which is passed back in for the next token.
 
 ```python
@@ -317,10 +309,13 @@ class RopelessMLA(nn.Module):
     def forward(self, x, kv_cache=None, past_length=0):
         B, S, D = x.size()
 
-        # Compute absorbed_k once: W_q @ W_uk, shape: (D, latent_dim)
-        if self.absorbed_k is None:
-            absorbed = torch.matmul(self.W_q.weight, self.W_uk.weight)   # (D, latent_dim)
-            self.absorbed_k = absorbed.view(self.n_heads, self.dh, -1)   # (n_heads, dh, latent_dim)
+        # Compute absorbed_k once: one (D, latent_dim) matrix per head
+        # (nn.Linear.weight is (out_features, in_features); rows h*dh:(h+1)*dh belong to head h).
+        # During training W_q and W_uk change, so recompute it every step (cache only in eval mode).
+        if self.absorbed_k is None or self.training:
+            w_q  = self.W_q.weight.view(self.n_heads, self.dh, self.d_model)    # (n_heads, dh, D)
+            w_uk = self.W_uk.weight.view(self.n_heads, self.dh, -1)             # (n_heads, dh, latent_dim)
+            self.absorbed_k = torch.bmm(w_q.transpose(1, 2), w_uk)              # (n_heads, D, latent_dim)
 
         # Compress x into latent KV space
         new_c_kv = self.ln(self.W_dkv(x))                           # (B, S, latent_dim)
@@ -336,13 +331,10 @@ class RopelessMLA(nn.Module):
         v = v_full.view(B, S_full, self.n_heads, self.dh).transpose(1, 2)
                                                                     # (B, n_heads, S_full, dh)
 
-        # Use input x directly (since W_q is absorbed)
-        q = x.view(B, S, self.n_heads, self.dh)                     # (B, S, n_heads, dh)
-
-        # Compute attention scores
+        # Compute attention scores: every head uses the full x (W_q is absorbed)
         attn_scores = torch.zeros(B, self.n_heads, S, S_full, device=x.device)
         for h in range(self.n_heads):
-            tmp = torch.matmul(q[:, :, h], self.absorbed_k[h])      # (B, S, latent_dim)
+            tmp = torch.matmul(x, self.absorbed_k[h])               # (B, S, latent_dim)
             attn_scores[:, h] = torch.bmm(tmp, c_kv.transpose(1, 2))    # (B, S, S_full)
 
         # Scale and apply causal mask
@@ -369,7 +361,7 @@ class RopelessMLA(nn.Module):
 ### Step 2: Memory testing
 
 - Uses a larger model: `d_model = 512`, 8 heads, latent width 256.
-- A standard cache stores a key and a value (2 × 512 numbers per token); the latent cache stores 256 per token — 4× less.
+- For this input (B = 1, T = 5), a standard cache stores a key and a value (2 × 512 numbers per token, 20 KB); the latent cache stores 256 per token (5 KB) — 4× less.
 
 ```python
 # === Demo for Testing ===
@@ -381,8 +373,9 @@ def demo():
     print(f"Output: {out.shape}, Cache: {cache.shape}")
 
     # Memory comparison
-    std_size = 2 * 2 * 10 * 512 * 4 / 1024    # KB (standard KV: B * 2 (K,V) * T * D * float32)
-    latent_size = 2 * 10 * 256 * 4 / 1024     # KB (latent cache: B * T * latent_dim * float32)
+    B, T = 1, 5
+    std_size = B * 2 * T * 512 * 4 / 1024     # KB (standard KV: B * 2 (K,V) * T * D * float32)
+    latent_size = B * T * 256 * 4 / 1024      # KB (latent cache: B * T * latent_dim * float32)
     print(f"Memory: Standard={std_size:.1f}KB, Latent={latent_size:.1f}KB, "
           f"Reduction={std_size/latent_size:.1f}x")
 
@@ -392,7 +385,7 @@ if __name__ == "__main__":
 
 ```
 Output: torch.Size([1, 5, 512]), Cache: torch.Size([1, 5, 256])
-Memory: Standard=80.0KB, Latent=20.0KB, Reduction=4.0x
+Memory: Standard=20.0KB, Latent=5.0KB, Reduction=4.0x
 ```
 
 ### Step 3: Cache testing — single new inference
@@ -423,9 +416,13 @@ demo_cache_usage()
 ```
 
 ```
-Step 1: Initial input              Step 2: New token
-Output shape: (1, 5, 8)            Output shape: (1, 1, 8)
-Cache shape:  (1, 5, 4)            Cache shape:  (1, 6, 4)
+Step 1: Initial input
+Output shape: torch.Size([1, 5, 8])
+Cache shape:  torch.Size([1, 5, 4])
+
+Step 2: New token
+Output shape: torch.Size([1, 1, 8])
+Cache shape:  torch.Size([1, 6, 4])
 ```
 
 ### Step 4: Cache growth
@@ -464,7 +461,8 @@ Step 4: Added 1 token -> cache shape: torch.Size([1, 54, 4])
 ### Step 5: Visualizing W_q, W_uk and W_uv matrices for different heads
 
 - Takes `W_q`, `W_uk` and `W_uv` out of the model as NumPy arrays.
-- Reshapes them per head and draws one heatmap per head and matrix, showing the weights each head works with.
+- Draws one heatmap per head and matrix, showing the weights each head works with.
+- `nn.Linear` stores weights as (out_features, in_features), so reshaping the rows gives each head its own slice: `W_q` (4, 8), `W_uk` and `W_uv` (4, 4) per head.
 
 ```python
 import torch
@@ -493,9 +491,9 @@ W_uv = model.W_uv.weight.detach().numpy()
 # Split per head
 n_heads = model.n_heads
 dh = model.dh
-W_q_heads  = W_q.reshape(n_heads, dh, -1)
-W_uk_heads = W_uk.T.reshape(n_heads, dh, -1)
-W_uv_heads = W_uv.T.reshape(n_heads, dh, -1)
+W_q_heads  = W_q.reshape(n_heads, dh, -1)      # (n_heads, dh, D)
+W_uk_heads = W_uk.reshape(n_heads, dh, -1)     # (n_heads, dh, latent_dim)
+W_uv_heads = W_uv.reshape(n_heads, dh, -1)     # (n_heads, dh, latent_dim)
 
 # Plot heatmaps
 fig, axes = plt.subplots(n_heads, 3, figsize=(12, 5))
@@ -517,9 +515,11 @@ plt.show()
 
 ## Notes
 
+- **Absorbed MLA = standard attention:** building the keys explicitly (`K = c_kv · W_uk`) and computing ordinary attention gives exactly the same scores as Step ⑦ (difference about $`10^{-17}`$). The absorbed form only regroups the matrix products.
+- **Heads split the weights, not the input:** every head multiplies the whole `x` by its own columns of `W_q` and `W_uk`.
 - **Normalisation (Step ⑤):** the compressed latent vector is normalised with LayerNorm, as in the PyTorch code. DeepSeek-V2 and V3 use RMSNorm at this point [1].
 - **Scaling (Step ⑦):** the attention scores are divided by $`\sqrt{d_{head}} = 2`$ before the softmax, so they do not grow with the head size.
-- **Head split (Step ⑦):** this walkthrough and the code split the input `x` between the heads. In the standard multi-head formulation each head's query is $`x \cdot W_q[:, \text{head columns}]`$, which uses all of `x`; that version gives different numbers (for head 1, scores [−0.0396, −0.0712, 0.0570, −0.0698, −0.0046, −0.0057]).
+- **Cache size:** for the six tokens the latent cache holds 24 numbers (6 × 4); multi-head attention would hold 96 (6 × 2 × 8).
 
 ---
 
@@ -537,6 +537,7 @@ plt.show()
 | `README.md` | This document |
 | `Topic11_MLA_from_scratch.ipynb` | Part 1 in NumPy (every step, with outputs) and Part 2 in PyTorch (run in Colab) |
 | `Topic11_CodingMLA.docx` | Technical report |
+| `Topic11_CodingMLA.pdf` | Technical report (PDF, readable in the browser) |
 | `images/` | Figure used in this README and the report |
 
 ---
