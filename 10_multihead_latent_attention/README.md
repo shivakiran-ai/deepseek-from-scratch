@@ -30,7 +30,7 @@ This topic introduces **multi-head latent attention (MLA)** [1], the attention m
 | **Document type** | Concept & derivation |
 | **Core question** | Can we have a small KV cache *and* different keys and values for every head? |
 | **Builds on** | Topic 06 — Multi-Head Attention · Topic 07 — KV Cache · Topics 08 – 09 — MQA and GQA |
-| **Running example** | `"The next day is"` → `"bright"` — $`X \in \mathbb{R}^{4 \times 8}`$, 2 heads, latent width 4 |
+| **Running example** | `"The next day is"` → `"bright"` — $`X \in \mathbb{R}^{4 \times 8}`$, 2 heads of size $`d_h = 2`$ ($`n_h d_h = 4`$), latent width 4 |
 | **Key result** | Cache one latent vector per token: 57× smaller than MHA for DeepSeek, with quality stronger than MHA |
 | **Key technique** | The absorption trick — $`W_{UK}`$ into the query, $`W_{UV}`$ into the output projection |
 | **Introduced by** | DeepSeek-AI, *DeepSeek-V2* (2024) |
@@ -91,13 +91,15 @@ K = C_{KV} W_{UK} = X W_{DKV} W_{UK}, \qquad
 V = C_{KV} W_{UV} = X W_{DKV} W_{UV}
 ```
 
-| Matrix | Role | Shape (running example) | Shape (general) |
+| Matrix | Role | Shape (running example: $`n_h = 2`$, $`d_h = 2`$) | Shape (general) |
 |---|---|:-:|:-:|
 | $`W_Q`$ | query matrix | $`(8, 4)`$ | $`d \times n_h d_h`$ |
 | $`W_{DKV}`$ | down-projection into the latent space | $`(8, 4)`$ | $`d \times d_c`$ |
 | $`W_{UK}`$ | up-projection for keys | $`(4, 4)`$ | $`d_c \times n_h d_h`$ |
 | $`W_{UV}`$ | up-projection for values | $`(4, 4)`$ | $`d_c \times n_h d_h`$ |
 | $`C_{KV}`$ | latent KV matrix — **the only thing cached** | $`(4, 4)`$ | $`s \times d_c`$ |
+
+In the running example $`n_h d_h = 2 \times 2 = 4`$, so these are the full multi-head shapes. Each head owns two columns: $`W_Q^{(i)}`$ is $`(8, 2)`$, and $`W_{UK}^{(i)}`$ and $`W_{UV}^{(i)}`$ are $`(4, 2)`$. (Topic 11 uses $`d_h = 4`$, so there $`W_q`$ is $`(8, 8)`$ and $`W_{uk}`$, $`W_{uv}`$ are $`(4, 8)`$.)
 
 Because $`W_{UK}`$ and $`W_{UV}`$ are split into one block per head, head $`i`$ gets its own keys and values even though all heads start from the same $`C_{KV}`$:
 
@@ -167,19 +169,19 @@ If we cache $`C_{KV} = X W_{DKV}`$, we can compute the attention scores and the 
 
 <p align="center"><img src="./images/fig4_new_token_decode.png" width="100%"/></p>
 
-The latent cache already holds $`C_{KV} = X W_{DKV}`$ of shape $`(4, 4)`$ for `"The next day is"`. What happens when the new token `"bright"` comes in?
+The latent cache already holds $`C_{KV} = X W_{DKV}`$ of shape $`(4, 4)`$ for `"The next day is"`. What happens when the new token `"bright"` comes in? Steps 1, 4 and 5 are done separately for each head $`i`$ ($`d_h = 2`$); Figure 4 shows both heads.
 
-1. **Absorbed query.** The new token's query is projected straight into the latent space:
+1. **Absorbed query.** For head $`i`$, the new token's query is projected straight into the latent space:
 
 ```math
-\tilde{q}_{\text{bright}} \;=\; x_{\text{bright}} \left(W_Q W_{UK}^{\top}\right),
-\qquad (1, 8) \cdot (8, 4) \cdot (4, 4) \;\to\; (1, 4)
+\tilde{q}_{\text{bright}}^{(i)} \;=\; x_{\text{bright}} \left(W_Q^{(i)} W_{UK}^{(i)\top}\right),
+\qquad (1, 8) \cdot (8, 2) \cdot (2, 4) \;\to\; (1, 4)
 ```
 
 2. **Compress the new token.** $`c_{\text{bright}} = x_{\text{bright}} W_{DKV}`$, of shape $`(1, 4)`$.
 3. **Append it to the latent cache.** $`C_{KV}`$ grows from $`(4, 4)`$ to $`(5, 4)`$. The old rows are reused, never recomputed.
-4. **Scores and weights.** $`\tilde{q}_{\text{bright}} \, C_{KV}^{\top}`$ gives the attention scores for `"bright"`, of shape $`(1, 5)`$; softmax turns them into attention weights $`(1, 5)`$.
-5. **Context vector.** $`C_{KV} W_{UV}`$ gives the value matrix $`(5, 4)`$, and the weights times the values give the context vector for `"bright"`, of shape $`(1, 4)`$. In practice $`W_{UV}`$ is absorbed into the output projection (Section 4.2), so even this step needs no value matrix.
+4. **Scores and weights.** For each head, $`\tilde{q}_{\text{bright}}^{(i)} \, C_{KV}^{\top}`$ gives the attention scores for `"bright"`, of shape $`(1, 5)`$; softmax turns them into attention weights $`(1, 5)`$.
+5. **Context vector.** $`C_{KV} W_{UV}^{(i)}`$ gives head $`i`$'s value matrix $`(5, 2)`$, and its weights times these values give head $`i`$'s context vector for `"bright"`, of shape $`(1, 2)`$. The two heads together give $`(1, 4)`$. In practice $`W_{UV}`$ is absorbed into the output projection (Section 4.2), so even this step needs no value matrix.
 
 Here we need just **one latent cache** — no separate cache for keys and values.
 
