@@ -12,10 +12,10 @@
 
 <br/>
 
-[![Topics Complete](https://img.shields.io/badge/Topics%20Complete-14%20%2F%2026-1A56A0?style=for-the-badge)](.)
+[![Topics Complete](https://img.shields.io/badge/Topics%20Complete-15%20%2F%2026-1A56A0?style=for-the-badge)](.)
 [![Stage 1](https://img.shields.io/badge/Stage%201%20%7C%20Foundations-3%2F3-22C55E?style=for-the-badge)](.)
 [![Stage 2](https://img.shields.io/badge/Stage%202%20%7C%20Attention%20%26%20KV%20Cache-6%2F6-22C55E?style=for-the-badge)](.)
-[![Stage 3](https://img.shields.io/badge/Stage%203%20%7C%20MLA%20%26%20RoPE-5%2F6-2E75B6?style=for-the-badge)](.)
+[![Stage 3](https://img.shields.io/badge/Stage%203%20%7C%20MLA%20%26%20RoPE-6%2F6-22C55E?style=for-the-badge)](.)
 [![Stage 4](https://img.shields.io/badge/Stage%204%20%7C%20Mixture%20of%20Experts-0%2F4-6B7280?style=for-the-badge)](.)
 [![Stage 5](https://img.shields.io/badge/Stage%205%20%7C%20Multi--Token%20Prediction-0%2F3-6B7280?style=for-the-badge)](.)
 [![Stage 6](https://img.shields.io/badge/Stage%206%20%7C%20Quantization-0%2F3-6B7280?style=for-the-badge)](.)
@@ -55,12 +55,12 @@ Read the `README.md` first. Run the notebook to see it in action. Open the `.doc
 ## Progress
 
 ```
-Overall  ███████████████████████░░░░░░░░░░░░░░░░░░░  14 / 26 topics complete
+Overall  ████████████████████████░░░░░░░░░░░░░░░░░░  15 / 26 topics complete
 
 Stage 1  Foundations             ████████████████████  3 / 3  ✅ COMPLETE
 Stage 2  Attention & KV Cache    ████████████████████  6 / 6  ✅ COMPLETE
-Stage 3  MLA & RoPE              █████████████████░░░  5 / 6  ← active
-Stage 4  Mixture of Experts      ░░░░░░░░░░░░░░░░░░░░  0 / 4
+Stage 3  MLA & RoPE              ████████████████████  6 / 6  ✅ COMPLETE
+Stage 4  Mixture of Experts      ░░░░░░░░░░░░░░░░░░░░  0 / 4  ← next
 Stage 5  Multi-Token Prediction  ░░░░░░░░░░░░░░░░░░░░  0 / 3
 Stage 6  Quantization            ░░░░░░░░░░░░░░░░░░░░  0 / 3
 Stage 7  Summary                 ░░░░░░░░░░░░░░░░░░░░  0 / 1
@@ -99,7 +99,7 @@ Stage 7  Summary                 ░░░░░░░░░░░░░░░�
 
 ---
 
-### 🗜️ Stage 3 — Multi-Head Latent Attention & Positional Encodings
+### 🗜️ Stage 3 — Multi-Head Latent Attention & Positional Encodings ✅
 
 > *DeepSeek's compressed KV cache, and how RoPE is made to fit with it*
 
@@ -110,7 +110,7 @@ Stage 7  Summary                 ░░░░░░░░░░░░░░░�
 | 12 | [Integer & Binary Positional Encodings](./12_integer_binary_positional_encoding/README.md) | ✅ | Why position matters · integer encoding swamps meaning · binary bits as square waves · why jumps block optimisation |
 | 13 | [Sinusoidal Positional Encodings](./13_sinusoidal_positional_encoding/README.md) | ✅ | sin/cos at many frequencies · relative positions as rotations · why adding pollutes meaning |
 | 14 | [Rotary Positional Encodings (RoPE)](./14_rotary_positional_encoding/README.md) | ✅ | Rotate Q and K by position · magnitude preserved · relative position in the dot product · low vs high frequency pairs |
-| 15 | [DeepSeek MLA + RoPE (Decoupled RoPE)](./15_deepseek_mla_rope/README.md) | 🔲 | Why RoPE breaks weight absorption · decoupled rotary keys and queries |
+| 15 | [DeepSeek MLA + RoPE (Decoupled RoPE)](./15_deepseek_mla_rope/README.md) | ✅ | Why RoPE breaks weight absorption · content + RoPE score split · shared RoPE key · 576 values per token, ≈57× smaller cache |
 
 ---
 
@@ -246,7 +246,7 @@ deepseek-from-scratch/
 ├── 12_integer_binary_positional_encoding/   ✅ Complete
 ├── 13_sinusoidal_positional_encoding/       ✅ Complete
 ├── 14_rotary_positional_encoding/           ✅ Complete
-├── 15_deepseek_mla_rope/                    🔲 Planned
+├── 15_deepseek_mla_rope/                    ✅ Complete
 ├── 16_moe_intro/                            🔲 Planned
 ├── 17_moe_load_balancing/                   🔲 Planned
 ├── 18_deepseek_moe/                         🔲 Planned
